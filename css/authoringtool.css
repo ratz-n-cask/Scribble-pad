@@ -1,0 +1,413 @@
+body {
+	margin:0px;
+	padding:0px;
+	background-image:url('stripe_bg.png');
+} 
+	#wrapper {
+		margin:0px;
+		padding:0px;
+			padding-left:100px;
+	}
+	.dropdown {
+		margin:0px;
+		padding:0px;
+		opacity:0.0;
+		z-index:9;
+	}
+	#img_add {
+		margin:0px;
+		padding:0px;
+		position:absolute;
+		top:394px;
+		left:321px;
+		opacity:0.0;
+		z-index:9;
+	}
+	.newBox {
+		margin:0px;
+		padding:0px;
+		border:2px dotted red;
+		position:absolute;
+		z-index:26;
+	}
+	#add_btn {
+		margin-left:25px;
+	}
+		#tool_window {
+			margin:0px;
+			padding:0px;
+			height:600px;
+			width:1406px;
+			position:absolute;
+			top:111px;
+			left:0px;
+			overflow:hidden;
+		}
+			#begin {
+				padding-left:86px;
+				height:60px;
+				width:200px;
+				top:516px;
+				left:756px;
+				font-size:42px;
+			}
+			#snd_btn_container {
+				margin:0px;
+				padding:0px;
+				position:absolute;
+				top:5px;
+				left:58px;
+				width:400px;
+				z-indez:14;
+				opacity:0.0;
+				visibility:hidden;
+			}
+				#save{
+					padding-left:44px;
+					height:50px;
+					width:122px;
+					top:516px;
+					left:574px;
+					font-size:30px;
+					z-index:14;
+				}
+				#load{
+					padding-left:44px;
+					height:50px;
+					width:122px;
+					top:516px;
+					left:756px;
+					font-size:30px;
+					z-index:14;
+				}
+				#reload{
+					padding-left:44px;
+					height:50px;
+					width:122px;
+					top:516px;
+					left:938px;
+					font-size:30px;
+					z-index:14;
+				}
+			.work_area {
+				margin:0px;
+				padding:0px;
+				height:495px;
+				width:815px;
+				background-color:#f7f7f7;
+				border:2px solid #9e9e9e;
+				border-radius:10px;
+				position:absolute;
+				top:0px;
+				left:505px;
+				overflow:hidden;
+			}
+				.ini_work_area {
+					margin:0px;
+					padding:0px;
+					height:495px;
+					width:815px;
+					background-color:#545454;
+					border:2px solid #545454;
+					border-radius:10px;
+					position:absolute;
+					top:0px;
+					left:505px;
+					overflow:hidden;
+				}	
+				.clear {
+					margin:0px;
+					padding-left:14px;
+					height:30px;
+					width:120px;
+					border:1px solid gray;
+					border-radius:5px;
+					font-family:Candara;
+					font-size:20px;
+					position:absolute;
+					bottom:0px;
+					right:0px;
+						background-image: linear-gradient(bottom, rgb(212,214,211) 0%, rgb(255,255,255) 56%, rgb(242,242,242) 100%);
+						background-image: -o-linear-gradient(bottom, rgb(212,214,211) 0%, rgb(255,255,255) 56%, rgb(242,242,242) 100%);
+						background-image: -moz-linear-gradient(bottom, rgb(212,214,211) 0%, rgb(255,255,255) 56%, rgb(242,242,242) 100%);
+						background-image: -webkit-linear-gradient(bottom, rgb(212,214,211) 0%, rgb(255,255,255) 56%, rgb(242,242,242) 100%);
+						background-image: -ms-linear-gradient(bottom, rgb(212,214,211) 0%, rgb(255,255,255) 56%, rgb(242,242,242) 100%);
+
+						background-image: -webkit-gradient(
+							linear,
+							left bottom,
+							left top,
+							color-stop(0, rgb(212,214,211)),
+							color-stop(0.56, rgb(255,255,255)),
+							color-stop(1, rgb(242,242,242))
+						);
+					cursor:pointer;
+					z-index:15;
+				}
+					.ini_clear {
+						margin:0px;
+						padding-left:14px;
+						height:30px;
+						width:120px;
+						border:1px solid gray;
+						border-radius:5px;
+						font-family:Candara;
+						font-size:20px;
+						position:absolute;
+						bottom:0px;
+						right:0px;
+							background-image: linear-gradient(bottom, rgb(56,56,56) 24%, rgb(128,128,128) 62%);
+							background-image: -o-linear-gradient(bottom, rgb(56,56,56) 24%, rgb(128,128,128) 62%);
+							background-image: -moz-linear-gradient(bottom, rgb(56,56,56) 24%, rgb(128,128,128) 62%);
+							background-image: -webkit-linear-gradient(bottom, rgb(56,56,56) 24%, rgb(128,128,128) 62%);
+							background-image: -ms-linear-gradient(bottom, rgb(56,56,56) 24%, rgb(128,128,128) 62%);
+
+							background-image: -webkit-gradient(
+								linear,
+								left bottom,
+								left top,
+								color-stop(0.24, rgb(56,56,56)),
+								color-stop(0.62, rgb(128,128,128))
+							);
+						cursor:pointer;
+						z-index:15;
+					}
+				#test {
+					margin:0px;
+					padding:0px;
+					height:100px;
+					width:100px;
+					border:3px solid red;
+					position:absolute;
+					top:0px;
+					left:290px;
+				}
+				.trash {
+					margin:0px;
+					padding:0px;
+					height:100%;
+					width:64px;
+					position:absolute;
+					right:0px;
+					font-family:Helvetica;
+					font-size:20px;
+					color:#ababab;
+					background-color:#e6e6e6;
+					opacity:0.1;
+				}
+					.ini_trash {
+						margin:0px;
+						padding:0px;
+						height:100%;
+						width:64px;
+						position:absolute;
+						right:0px;
+						font-family:Helvetica;
+						font-size:20px;
+						color:#ababab;
+						background-color:#e6e6e6;
+						opacity:0.1;
+					}
+					.trash div {
+						margin:0px;
+						padding:0px;
+						position:absolute;
+						left:7px;
+						top:235px;
+					}
+						.ini_trash div {
+							margin:0px;
+							padding:0px;
+							position:absolute;
+							left:7px;
+							top:235px;
+						}
+			.button {
+				margin:0px;
+				padding:0px;
+				height:60px;
+				width:163px;
+				border:1px solid gray;
+				border-radius:5px;
+				font-family:Candara;
+				font-size:42px;
+				position:absolute;
+				left:312px;
+					background-image: linear-gradient(bottom, rgb(212,214,211) 0%, rgb(255,255,255) 56%, rgb(242,242,242) 100%);
+					background-image: -o-linear-gradient(bottom, rgb(212,214,211) 0%, rgb(255,255,255) 56%, rgb(242,242,242) 100%);
+					background-image: -moz-linear-gradient(bottom, rgb(212,214,211) 0%, rgb(255,255,255) 56%, rgb(242,242,242) 100%);
+					background-image: -webkit-linear-gradient(bottom, rgb(212,214,211) 0%, rgb(255,255,255) 56%, rgb(242,242,242) 100%);
+					background-image: -ms-linear-gradient(bottom, rgb(212,214,211) 0%, rgb(255,255,255) 56%, rgb(242,242,242) 100%);
+
+					background-image: -webkit-gradient(
+						linear,
+						left bottom,
+						left top,
+						color-stop(0, rgb(212,214,211)),
+						color-stop(0.56, rgb(255,255,255)),
+						color-stop(1, rgb(242,242,242))
+					);
+				cursor:pointer;
+			}
+				.ini_button {
+					margin:0px;
+					padding:0px;
+					height:60px;
+					width:163px;
+					border:1px solid gray;
+					border-radius:5px;
+					font-family:Candara;
+					font-size:42px;
+					position:absolute;
+					left:312px;
+						background-image: linear-gradient(bottom, rgb(56,56,56) 24%, rgb(128,128,128) 62%);
+						background-image: -o-linear-gradient(bottom, rgb(56,56,56) 24%, rgb(128,128,128) 62%);
+						background-image: -moz-linear-gradient(bottom, rgb(56,56,56) 24%, rgb(128,128,128) 62%);
+						background-image: -webkit-linear-gradient(bottom, rgb(56,56,56) 24%, rgb(128,128,128) 62%);
+						background-image: -ms-linear-gradient(bottom, rgb(56,56,56) 24%, rgb(128,128,128) 62%);
+
+						background-image: -webkit-gradient(
+							linear,
+							left bottom,
+							left top,
+							color-stop(0.24, rgb(56,56,56)),
+							color-stop(0.62, rgb(128,128,128))
+						);
+				}
+					.over {
+						background-image: linear-gradient(bottom, rgb(184,184,184) 28%, rgb(230,230,230) 64%);
+						background-image: -o-linear-gradient(bottom, rgb(184,184,184) 28%, rgb(230,230,230) 64%);
+						background-image: -moz-linear-gradient(bottom, rgb(184,184,184) 28%, rgb(230,230,230) 64%);
+						background-image: -webkit-linear-gradient(bottom, rgb(184,184,184) 28%, rgb(230,230,230) 64%);
+						background-image: -ms-linear-gradient(bottom, rgb(184,184,184) 28%, rgb(230,230,230) 64%);
+
+						background-image: -webkit-gradient(
+							linear,
+							left bottom,
+							left top,
+							color-stop(0.28, rgb(184,184,184)),
+							color-stop(0.64, rgb(230,230,230))
+						);
+					}
+					.clicked {
+						background-image: linear-gradient(bottom, rgb(148,148,148) 28%, rgb(194,194,194) 64%);
+						background-image: -o-linear-gradient(bottom, rgb(148,148,148) 28%, rgb(194,194,194) 64%);
+						background-image: -moz-linear-gradient(bottom, rgb(148,148,148) 28%, rgb(194,194,194) 64%);
+						background-image: -webkit-linear-gradient(bottom, rgb(148,148,148) 28%, rgb(194,194,194) 64%);
+						background-image: -ms-linear-gradient(bottom, rgb(148,148,148) 28%, rgb(194,194,194) 64%);
+
+						background-image: -webkit-gradient(
+							linear,
+							left bottom,
+							left top,
+							color-stop(0.28, rgb(148,148,148)),
+							color-stop(0.64, rgb(194,194,194))
+						);
+					}
+				#highlight {
+					padding-top:5px;
+					padding-left:3px;
+					height:64px;
+					width:170px;
+					top:0px;
+					z-index:10;
+				}
+					#highlight_clear_holder {
+						margin:0px;
+						padding:0px;
+						width:124px;
+						position:absolute;
+						top:22px;
+						left:336px;
+						z-index:9;
+					}
+				#move {
+					padding-top:5px;
+					padding-left:31px;
+					width:131px;
+					top:85px;
+				}
+				#resize {
+					padding-top:5px;
+					padding-left:24px;
+					width:140px;
+					top:170px;
+				}
+				#shape {
+					padding-top:9px;
+					padding-left:1px;
+					height:95px;
+					line-height:39px;
+					text-align:center;
+					top:250px;
+					z-index:10;
+				}
+					#icon_holder {
+						margin:0px;
+						padding:0px;
+						height:20px;
+						width:148px;
+						position:absolute;
+						top:293px;
+						left:322px;
+						opacity:0.0;
+						z-index:9;
+					}
+					#shape_info {
+						margin:0px;
+						padding:0px;
+						height:113px;
+						width:168px;
+						position:absolute;
+						top:265px;
+						left:313px;
+						opacity:0.0;
+						visibility:hidden;
+					}
+				#image {
+					padding-top:9px;
+					padding-left:1px;
+					height:95px;
+					line-height:39px;
+					text-align:center;
+					top:371px;
+					z-index:10;
+				}
+#modal {
+	position:absolute;
+	top:1px;
+}
+	#mask {
+		position:absolute;
+		top:1px;
+		background-color:#171717;
+		visibility:hidden;
+		opacity:0.0;
+		z-index:100;
+	}
+	#container {
+		height:0px;
+		position:absolute;
+		border:10px solid black;
+		background-color:#ebebeb;
+		font-family:Helvetica;
+		font-size:16px;
+		text-align:justify;
+		text-justify:inter-word;
+		display:none;
+		z-index:101;
+	}
+	#instruction {
+		margin:0px;
+		padding:0px;
+		width:100px;
+		position:absolute;
+		top:602px;
+		left:339px;
+	}
+	#instruction_btn {
+		height:50px;
+		width:100px;
+		font-family:Helvetica;
+		font-size:27px;
+	}

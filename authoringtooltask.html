@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang = 'en'>
+<head>
+<link rel="stylesheet" type="text/css" href='css/start/jquery-ui-1.8.16.custom.css' />
+<link rel="stylesheet" type="text/css" href='css/authoringtool.css' />
+<script type = 'text/javascript' src = 'js/jquery-1.7.1.js'></script>
+<script type = 'text/javascript' src = 'js/jquery-ui.js'></script>
+<script type = 'text/javascript' src = 'js/jquery.Storage.js'></script>
+<script type = 'text/javascript'>
+$(document).ready(function() {
+	
+	var increment = 0;
+	
+	var totalImage = [];
+	var totalShape = [];
+	var totalHighlight = [];
+	
+	var totalState = [];
+	
+	$('#begin').bind('click',
+		function() {
+		{//Begin Screen
+			//Set variables containing the height and width of the modal
+			var maskHeight = $(document).height();
+			var maskWidth = $(document).width();
+			var maskOffset = $('#mask').offset();
+			
+			$('#mask').css({
+				height:maskHeight,
+				width:maskWidth,
+				visibility:'visible'
+			});
+			
+			//Animate a flicker effect on the modal and bring in instruction container
+			$('#mask').fadeTo(300,0.9,function() {
+
+				//Set css for instruction container as callback
+				$('#container').css({
+					padding:'39px',
+					left:'393px',
+					top:'27px',
+					width:'710px',
+					height:'602px'
+				}).slideDown(300);
+			});
+			
+			$('#instruction_btn').bind('click',
+				function() {
+					$('#modal').fadeOut(300,
+						function() {
+							$('#modal').remove(); //removes instruction screen, tool ux begins
+						}
+					);
+				}
+			);
+		}
+		
+		{//Opens canvas for work
+			$('#work_area').toggleClass('ini_work_area work_area');
+				$('#work_area').addClass('dropSpace');
+			$('#highlight').toggleClass('ini_button button');
+			$('#move').toggleClass('ini_button button');
+			$('#resize').toggleClass('ini_button button');
+			$('#shape').toggleClass('ini_button button');
+			$('#image').toggleClass('ini_button button');
+			$('#clear').toggleClass('ini_clear clear');
+			$('#trash').toggleClass('ini_trash trash');
+				$('#trash').addClass('trashSpace');
+		}
+		
+		{//Initialize Drop and Trash Spaces
+			//.dropSpace is initialized, .trashSpace is drop-animated
+			$('.dropSpace').droppable({
+				accept:'.canDrag',
+				drop:function() {
+					$('.trashSpace').animate({
+						opacity:'0.1'
+					},500);
+				}
+			});
+			//.trashSpace is initialized, bubbling is halted, activate(drag), over, drop, and out functions are set
+			$('.trashSpace').droppable({
+				tolerance:'pointer',
+				greedy:true,
+				activate:function() {
+					$('.trashSpace').animate({
+						opacity:'0.3'
+					},500);
+				},
+				over:function() {
+					$('.trashSpace').queue('fx',function() {
+						$(this).css({
+							backgroundColor:'#ff0000',
+							color:'black'
+						});
+						$(this).dequeue('fx');
+					});
+					$('.trashSpace').animate({
+						opacity:'0.3'
+					},500);
+				},
+				drop:function() {
+					$('.currentDrag').animate({
+						opacity:'0.0'
+					},600,function() {
+						$('.currentDrag').remove();
+						$('.trashSpace').queue('fx',function() {
+						$(this).css({
+							backgroundColor:'#e6e6e6'
+						});
+						$(this).dequeue('fx');
+						});
+						$('.trashSpace').animate({
+							opacity:'0.1'
+						},200);
+					});
+				},
+				out:function() {
+					$('.trashSpace').queue('fx',function() {
+						$(this).css({
+							backgroundColor:'#e6e6e6'
+						});
+						$(this).dequeue('fx');
+					});
+					$('.trashSpace').animate({
+						opacity:'0.3'
+					},200);
+				}
+			});
+		}
+		
+		{//Bind handlers to elements
+			{//Layout/Design Effects
+		
+		//Button Hover Effects
+		$('.button,.clear').bind({
+			mouseenter:function(e) {
+				$(this).addClass('over');
+			},
+			mouseleave:function(e) {
+				$('.over').removeClass('over');
+			}
+		});
+		//Button Class Toggling
+		$('.button').bind('click',
+			function() {
+				$(this).toggleClass('clicked not_clicked');
+				$('.button').not(this).removeClass('clicked')
+					.addClass('not_clicked');
+				
+				//Add Image Slide Back Effect
+				if ($('#image').hasClass('not_clicked')==true) {
+					$('#image').animate({
+						display:'none',
+						left:'312px',
+						opacity:'1.0'
+					},200);
+					$('#img_add').animate({
+						display:'none',
+						opacity:'0.0'
+					},200);
+				}
+				
+				//Add Shape Slide Back Effect
+				if ($('#shape').hasClass('not_clicked')==true) {
+					$('#shape').animate({
+						left:'312px',
+						opacity:'1.0'
+					},200);
+					$('#icon_holder').animate({
+						display:'none',
+						opacity:'0.0'
+					});
+				}
+				
+				//Highlight Slide Back Effect
+				if ($('#highlight').hasClass('not_clicked')==true) {
+					$('#highlight').animate({
+						left:'312px',
+						opacity:'1.0'
+					},200);
+					$('#highlight_clear_holder').animate({
+						display:'none',
+						opacity:'0.0'
+					});
+				}
+			}
+		);
+		//Add Image Slide Out Effect
+		$('#image').bind('click',
+			function() {
+				$(this).animate({
+					left:'140px',
+					opacity:'0.3'
+				},200);
+				$('#img_add').animate({
+					opacity:'1.0'
+				},200);
+			}
+		);
+		//Add Shape Slide Out Effect
+		$('#shape').bind('click',
+			function() {
+				$(this).animate({
+					left:'140px',
+					opacity:'0.3'
+				},200);
+				
+				$('#icon_holder').animate({
+					opacity:'1.0'
+				},200);
+			}
+		);
+		
+		//Rectangle Choice Slide Out Effect
+		$('#draw_rect').bind('click',
+			function() {
+				$('#icon_holder').css({
+					zIndex:'16'
+				})
+				.animate({
+					left:'140px',
+					opacity:'0.7'
+				},200);
+				
+				$('#rect_height').show(); //This div is only used for rectangles
+				$('#rect_width').html('Width: '); //Width div changed to width for rectangle use
+				$('#shape_info').css({
+					visibility:'visible'
+				})
+				.animate({
+					opacity:'1.0'
+				},200);
+			}
+		);
+		
+		//Circle Choice Slide Out Effect
+		$('#draw_circ').bind('click',
+			function() {
+				$('#icon_holder').css({
+					zIndex:'16'
+				})
+				.animate({
+					left:'140px',
+					opacity:'0.7'
+				},200);
+				
+				$('#rect_height').hide(); //Height not used to drawing circles
+				$('#rect_width').html('Radius: '); //Width div changed to radius for circle use
+				
+				$('#shape_info').css({
+					visibility:'visible'
+				})
+				.animate({
+					opacity:'1.0'
+				},200);
+			}
+		);
+		
+		//Highlight Slide Out Effect
+		$('#highlight').bind('click',
+			function() {
+				$(this).animate({
+					left:'140px',
+					opacity:'0.3'
+				},200);
+				$('#highlight_clear_holder').animate({
+					opacity:'1.0'
+				},200);
+			}
+		);
+			}
+			
+			{//Add Image Button
+				$('#add_btn').bind('click',
+					function() {	
+						$('#work_area .item').removeClass('resizeMe').resizable('destroy');
+						$('#work_area .item').removeClass('canDrag').draggable('destroy');
+						thisIncrement = 0;
+						thisIncrement = thisIncrement + 1;
+						
+						var thisImgId = 'i' + increment;
+						
+						var src$ = $('#img_loc').val(); //textbox used for image source
+						
+						$('<img>').attr({ 				//generates image
+							src: src$,
+							'class':'item',
+							id:thisImgId
+						})
+						.addClass('canDrag')            
+						.appendTo($('#work_area'));
+						
+						var imgOffset = $('#' + thisImgId).offset();
+						var workAreaOffset = $('#work_area').offset();
+						
+						var xPos = imgOffset.left - workAreaOffset.left;
+						var yPos = imgOffset.top - workAreaOffset.top;
+						
+						$('#' + thisImgId).draggable({       //added images are automatically draggable
+							revert:'invalid',
+							snap:'.dropSpace',
+							cursor:'move',
+							stop:function() {
+								var imgState = {	 		 //image state is stored when the dragging ends
+									number:thisIncrement,
+									id:thisImgId,
+									type:'image',
+									url:src$,
+									offset:imgOffset,
+									x:xPos,
+									y:yPos
+								}
+								var j = imgState.number - 1;
+								totalImage[j] = imgState;
+								totalState[j] = imgState;
+							}
+						});
+						var imgState = {	 		 //image state is stored regardless of drag
+							number:thisIncrement,
+							id:thisImgId,
+							type:'image',
+							url:src$,
+							offset:imgOffset,
+							x:xPos,
+							y:yPos
+						}
+						var j = imgState.number - 1;
+						totalImage[j] = imgState;
+						totalState[j] = imgState;
+					}
+				);
+			}
+			
+			{//Add Shape Button
+				$('#shape').bind('click',
+					function() {
+						var c = 0;
+						
+						$('#work_area .item').removeClass('resizeMe').resizable('destroy'); //resize button is disengaged
+						$('#work_area .item').removeClass('canDrag').draggable('destroy'); //move button is disengaged
+						
+					});
+				
+				//Type of shape				
+				$('#draw_rect').bind('click',
+					function() {
+						c = 1;
+					});
+				$('#draw_circ').bind('click',
+					function() {
+						c = 2;
+					});
+				
+				//Shape code initialized
+				$('#add_shape').bind('click',
+					function() {
+						thisIncrement = 0;
+						thisIncrement = thisIncrement + 1;
+						increment = increment + 1;
+						
+						var thisCanvas = 'x' + increment;
+						
+						//Set empty shape memory objects
+						var shapeKind = '';
+						var canvasHeight = '';
+						var canvasWidth = '';
+						var shapeHeight = '';
+						var shapeWidth = '';
+						var shapeColor = '';
+						
+						//Obtain form inputs
+						var rectHeight = $('#rect_height_input').val();
+						var WidthOrRadius = $('#widthorradius').val();
+						
+						//Generate new canvas
+						$('<canvas>').attr({
+							id:thisCanvas
+						})
+						.addClass('item')
+						.css({
+							height:function() {
+								if (c == 1) {
+									shapeKind = 1;
+									canvasHeight = rectHeight;
+									return canvasHeight;
+								}
+								else if (c == 2) {
+									shapeKind = 2;
+									canvasWidth = WidthOrRadius * 2;
+									return canvasWidth;
+								}
+							},
+							width:function() {
+								if (c == 1) {
+									return WidthOrRadius;
+								}
+								else if (c == 2) {
+									return WidthOrRadius * 2;
+								}
+							},
+							zIndex:'25'
+						})
+						.appendTo('#work_area');
+						
+						var canvasOffset = $('#' + thisCanvas).offset();
+						var workAreaOffset = $('#work_area').offset();
+						
+						var xPos = canvasOffset.left - workAreaOffset.left; //Set x-origin of canvas
+						var yPos = canvasOffset.top - workAreaOffset.top; //Set y-origin of canvas
+			
+						if (c == 1) { 	//code for creating rectangle
+							var canvas = document.getElementById(thisCanvas);
+							var ctx = canvas.getContext('2d');								
+							
+							var trans = rectHeight/128;
+							
+							ctx.translate(trans,trans);
+							ctx.scale(1,.5);
+							ctx.fillStyle = $('#color_list option:selected').val();
+							ctx.fillRect(0,0,WidthOrRadius,rectHeight);
+							
+							shapeHeight = rectHeight;
+							shapeWidth = WidthOrRadius;
+							shapeColor = $('#color_list option:selected').val();
+						}
+						else if (c == 2) { 	//code for creating circle
+							var canvas = document.getElementById(thisCanvas);
+							var ctx = canvas.getContext('2d');
+							
+							var x = $(canvas).width()/2;
+							var y = $(canvas).height()/2;
+							var rad = WidthOrRadius;
+							var trans = rad/128;
+							
+							ctx.fillStyle = $('#color_list option:selected').val();
+							ctx.translate(trans,trans);
+							ctx.scale(1,.5);
+							ctx.beginPath();
+							ctx.arc(x,y,rad,0,Math.PI * 2,true);
+							ctx.fill();
+							
+							shapeHeight = rad * 2;
+							shapeWidth = rad * 2;
+							shapeColor = $('#color_list option:selected').val();
+						}
+						else {
+							$.noop(); //fall back
+						}
+						
+						
+						$('#' + thisCanvas).draggable({       //added canvases are automatically draggable
+							revert:'invalid',
+							snap:'.dropSpace',
+							cursor:'move',
+							stop:function() {
+								var shapeState = { 			  //State of shape has been recorded
+									number:thisIncrement,
+									id:thisCanvas,
+									type:'shape',
+									kind:shapeKind,
+									cheight:canvasHeight,
+									cwidth:canvasWidth,
+									height:shapeHeight,
+									width:shapeWidth,
+									color:shapeColor,
+									offset:canvasOffset,
+									x:xPos,
+									y:yPos
+								}
+								var j = shapeState.number - 1;
+								totalShape[j] = shapeState; //State of shape data has been stored
+								totalState[j] = shapeState;
+							}
+						});
+						
+						var shapeState = { 			  //State of shape has been recorded regardless of drag
+							number:thisIncrement,
+							id:thisCanvas,
+							type:'shape',
+							kind:shapeKind,
+							cheight:canvasHeight,
+							cwidth:canvasWidth,
+							height:shapeHeight,
+							width:shapeWidth,
+							color:shapeColor,
+							offset:canvasOffset,
+							x:xPos,
+							y:yPos
+						}
+						var j = shapeState.number - 1;
+						totalShape[j] = shapeState;
+						totalState[j] = shapeState;
+						
+						$('#icon_holder').css({
+							zIndex:'auto'
+						})
+						.animate({
+							left:'313px',
+							opacity:'0.0'
+						},200,
+							function() {
+								$('#shape').animate({
+									left:'312px',
+									opacity:'1.0'
+								},200);
+								$('#shape_info').css({
+									visibility:'hidden'
+								});
+							}
+						);
+					}
+				);
+			}
+			
+			{//Highlight Button
+				$('#highlight').bind('click',
+					function() {
+						if ($(this).hasClass('clicked') == true) {
+							
+							//Deactivate other buttons
+							$('#work_area .item').removeClass('resizeMe').resizable('destroy');
+							$('#work_area .item').removeClass('canDrag').draggable('destroy');
+							
+							//Set empty highlight memory objects
+							var thisHighlight = '';
+							var boxHeight = '';
+							var boxWidth = '';
+							var xPos = '';
+							var yPos = '';
+							
+						{//Marquee Box
+							
+							var ctr = 0; //highlight box counter initialized
+							
+							$('#work_area').css({
+								cursor:'crosshair' //cursor change for drawing box
+							});
+							
+							$('#work_area').click(function(e) {
+								var workAreaOffset = $('#work_area').offset();
+								
+								if (ctr == 0) {
+									increment = increment + 1;
+									var thisHighlight = 'h' + increment;
+									
+									var clickLocX = e.pageX; //x coordinate of origin of highlight box
+									var clickLocY = e.pageY; //y coordinate of origin of highlight box
+									
+									$('<div>').attr({
+										id:thisHighlight,
+										zIndex:'26'
+									})
+									.addClass('newBox addBox item')
+									.css({
+										top:clickLocY - workAreaOffset.top,
+										left:clickLocX - workAreaOffset.left
+									})
+									.appendTo('#work_area');
+									
+									xPos = clickLocX - workAreaOffset.left; //store x-origin of box
+									yPos = clickLocY - workAreaOffset.top; //store y-origin of box
+									
+									ctr = 1; //next stage of highlight box method reached
+								
+									if (ctr == 1) {
+										$('#work_area').mousemove(function(e){
+											var XpageCoord = e.pageX;
+											var YpageCoord = e.pageY;
+							
+											var boxHeight = YpageCoord - clickLocY; //height of the box changes with mouse movement
+											var boxWidth = XpageCoord - clickLocX;  //width of the box changes with mouse movement
+											
+											$('.addBox').css({
+												height:boxHeight + 'px',          //connect mouse movement with css class for highlight box
+												width:boxWidth + 'px'
+											});
+											ctr = 2; //next stage of the highlight box method reached
+										});
+									}
+								}
+								else if (ctr == 2) {
+									$('#work_area').css({
+										cursor: 'default'  //cursor changed back to normal
+									});
+									
+									$('#work_area').unbind('mousemove'); //mouse movement no longer has effect
+									
+									$('.addBox').appendTo('#work_area').removeClass('addBox'); //highlight box is permanently added
+									
+									ctr = 0; //reset
+									
+									$('#' + thisHighlight).draggable({       //added images are automatically draggable
+										revert:'invalid',
+										snap:'.dropSpace',
+										cursor:'move',
+										stop:function() {
+											var highlightState = { //state of highlight box has been recorded
+												number:increment,
+												id:thisHighlight,
+												'class':'newBox',
+												type:'highlight',
+												height:boxHeight,
+												width:boxWidth,
+												x:xPos,
+												y:yPos
+											}
+										var j = highlightState.number - 1;
+										totalHighlight[j] = highlightState; //state of highlight box has been stored
+										totalState[j] = highlightState;
+										}
+									});
+									
+									var highlightState = { //state of highlight box has been recorded regardless of drag
+										number:increment,
+										id:thisHighlight,
+										'class':'newBox',
+										type:'highlight',
+										height:boxHeight,
+										width:boxWidth,
+										x:xPos,
+										y:yPos
+									}
+								var j = highlightState.number - 1;
+								totalHighlight[j] = highlightState;
+								totalState[j] = highlightState;
+								}
+								else {
+									$.noop(); //fall back
+								}
+							});
+						}
+						}
+						else {
+							$('#work_area').unbind('click');
+						}
+					}
+				);
+				
+				//Button to clear highlights
+				$('#highlight_clear_btn').bind('click',
+					function() {
+						$('#work_area .newBox').remove();
+					}
+				);
+			}
+			
+			{//Move Button
+				$('#move').bind('click',
+					function() {
+						if ($(this).hasClass('clicked') == true) {
+							$('#work_area').unbind('click'); //deactivate select box
+							$('#work_area .item').removeClass('resizeMe').resizable('destroy'); //deactivate resize
+							
+							$('#work_area .item').addClass('canDrag'); //for use with drop space
+							
+							$('.canDrag').draggable({ //makes all elements on the work area becomes draggable
+								revert:'invalid',
+								snap:'.dropSpace',
+								cursor:'move',
+								start:function() {
+									$(this).addClass('currentDrag'); //for use with trash space
+								},
+								stop:function() {
+									workAreaOffset = $('#work_area').offset();
+									var newOffset = $(this).offset(); //new offset of the dragged element
+									
+									var newX = newOffset.left - workAreaOffset.left; //new x position of the dragged element
+									var newY = newOffset.top - workAreaOffset.top; //new y position of the dragged element
+									
+									this.x = newX; //new x position is set
+									this.y = newY; //new y position is set
+									
+									$(this).removeClass('currentDrag'); //makes each element independently trashable
+								}
+							});
+						}
+						else {
+							$('#work_area .item').draggable('destroy'); //deactivates the button when clicked twice
+						}
+					}
+				);
+			}
+			
+			{//Resize Button
+				$('#resize').bind('click',
+					function() {
+						if ($(this).hasClass('clicked') == true) {
+							$('#work_area').unbind('click'); //deactivate select box
+							$('#work_area .item').removeClass('canDrag').draggable('destroy'); //deactivate move
+							
+							$('#work_area .item').addClass('resizeMe'); //makes all elements on the work area resizable
+							
+							$('.resizeMe').resizable();
+						}
+						else {
+						$('#work_area .item').resizable('destroy'); //deactivates the button when clicked twice
+						}
+					}
+				);
+			}
+			
+			{//Clear
+			$('#clear').bind('click',
+				function() {
+					$('#work_area .item').remove(); //removes all elements from work area
+					
+					totalState.length = 0;
+				}
+			);
+			}
+		}
+		
+		{//Bring in Save, Load, and Reload Buttons
+			$('#begin').fadeOut(400).detach();
+			$('#snd_btn_container').css({
+				visibility:'visible'
+			})
+			.animate({
+				opacity:'1.0'
+			},400);
+			
+			{//Save Button
+			$('#save').bind('click',
+				function() {
+					var str = '';
+					var savedTotal = JSON.stringify(totalState);
+					
+					for (i=0;i<totalState.length;i++) { 						//loop through all of the canvas arrays and serialize into JSON
+						var imgName = 'image' + i;
+						var imgVal = JSON.stringify(totalImage);
+						
+						var shpName = 'shp' + i;
+						var shpVal = JSON.stringify(totalShape);
+						
+						var hLname = 'hL' + i;
+						var hLval = JSON.stringify(totalHighlight);
+						
+						var str = {imgName:imgVal,shpName:shpVal,hLname:hLval}; //Store individual serialized arrays into an object
+					}
+					var prepStr = JSON.stringify(str); 							//Serialize total canvas array object
+					
+					var totalSavedObj = {										//Prepare super-object for serialization
+						'serializedObj':prepStr,
+						'serializedTotal':savedTotal
+					}
+					
+					var totalSerializedObj = JSON.stringify(totalSavedObj);		//Serialize super-object
+					
+					localStorage.setItem('allSerialized',totalSerializedObj); 	//Store the total canvas in local memory
+					
+					alert('Canvas has been saved!');
+				}
+			);
+			}
+			
+			{//Load Button
+			$('#load').bind('click',
+				function() {
+					var retrievedTotalSerializedObj = localStorage.getItem('allSerialized'); //Retrieve total serialized object
+					
+					var parsedTotalSavedObj = JSON.parse(retrievedTotalSerializedObj);		//De-serialize super-object 
+					var parsedTotal = JSON.parse(parsedTotalSavedObj.serializedTotal);		//De-serialize totalState array
+					var parsedData = JSON.parse(parsedTotalSavedObj.serializedObj);			//De-serialize canvas item JSON
+						var parsedImgArray = JSON.parse(parsedData.imgName);				//De-serialize individual canvas item arrays
+						var parsedShpArray = JSON.parse(parsedData.shpName);
+						var parsedHlArray = JSON.parse(parsedData.hLname);
+					
+					for (i=0;i<parsedImgArray.length;i++) {							//Reconstruct the original image array
+						totalImage[i] = parsedImgArray[i];
+						console.log(totalImage[i]);
+					}
+					for (i=0;i<parsedShpArray.length;i++) {							//Reconstruct the original shape array
+						totalShape[i] = parsedShpArray[i];
+						console.log(totalShape[i]);
+					}
+					for (i=0;i<parsedHlArray.length;i++) {							//Reconstruct the original highlight array
+						totalHighlight[i] = parsedHlArray[i];
+						console.log(totalHighlight[i]);
+					}
+					
+					$('#add_btn,#add_shape').unbind('click');
+					
+					$('#add_btn').bind('click',
+						function() {
+							for (i=0;i<totalImage.length;i++) {	
+								$('#work_area .item').removeClass('resizeMe').resizable('destroy');
+								$('#work_area .item').removeClass('canDrag').draggable('destroy');
+								
+								var src$ = $('#img_loc').val(); //textbox used for image source
+								
+								$('<img>').attr({ 				//generates image
+									src:totalImage[i].url,
+									'class':'item',
+									id:totalImage[i].id
+								})
+								.css({
+									position:'absolute',
+									top:totalImage[i].y,
+									left:totalImage[i].x
+								})
+								.addClass('canDrag')            
+								.appendTo($('#work_area'));
+								
+								var imgOffset = $('#' + totalImage[i].id).offset();
+								var workAreaOffset = $('#work_area').offset();
+								
+								$('#' + totalImage[i].id).draggable({       //added images are automatically draggable
+									revert:'invalid',
+									snap:'.dropSpace',
+									cursor:'move',
+									stop:function() {
+										var imgState = {	 		 //image state is stored when the dragging ends
+											number:increment,
+											type:'image',
+											url:src$,
+											x:xPos,
+											y:yPos
+										}
+										var j = imgState.number - 1;
+										totalImage[j] = imgState;
+										totalState[j] = imgState;
+									}
+								});
+								var imgState = {	 		 //image state is stored regardless of drag
+									number:increment,
+									type:'image',
+									url:src$,
+								}
+								var j = imgState.number - 1;
+								totalImage[j] = imgState;
+								totalState[j] = imgState;
+							}
+						}
+					);
+					
+					$('#add_shape').bind('click',
+						function() {
+							for (i=0;i<totalShape.length;i++) {
+								//Set empty shape memory objects
+								var shapeKind = '';
+								var canvasHeight = '';
+								var canvasWidth = '';
+								var shapeHeight = '';
+								var shapeWidth = '';
+								var shapeColor = '';
+								
+								//Obtain form inputs
+								var rectHeight = totalShape[i].height;
+								var WidthOrRadius = totalShape[i].width;
+								
+								//Generate new canvas
+								$('<canvas>').attr({
+									id:totalShape[i].id
+								})
+								.addClass('item')
+								.css({
+									position:'absolute',
+									top:totalShape[i].y,
+									left:totalShape[i].x,
+									height:function() {
+										if (totalShape[i].kind == 1) {
+											canvasHeight = rectHeight;
+											return totalShape[i].cheight;
+										}
+										else if (totalShape[i].kind == 2) {
+											canvasWidth = WidthOrRadius * 2;
+											return totalShape[i].cwidth;
+										}
+									},
+									width:function() {
+										if (totalShape[i].kind == 1) {
+											return totalShape[i].cwidth;
+										}
+										else if (totalShape[i].kind == 2) {
+											return totalShape[i].cwidth;
+										}
+									},
+									zIndex:'25'
+								})
+								.appendTo('#work_area');
+								
+								var canvasOffset = $('#' + totalShape[i].id).offset();
+								var workAreaOffset = $('#work_area').offset();
+								
+								if (totalShape[i].kind == 1) { //code for creating rectangle
+									var canvas = document.getElementById(totalShape[i].id);
+									var ctx = canvas.getContext('2d');								
+									
+									var trans = rectHeight/128;
+									
+									ctx.translate(trans,trans);
+									ctx.scale(1,.5);
+									ctx.fillStyle = totalShape[i].color;
+									ctx.fillRect(0,0,WidthOrRadius/2,rectHeight);
+								}
+								else if (totalShape[i].kind == 2) { //code for creating circle
+									var canvas = document.getElementById(totalShape[i].id);
+									var ctx = canvas.getContext('2d');
+									
+									var x = $(canvas).width()/2;
+									var y = $(canvas).height()/2;
+									var rad = totalShape[i].width/2;
+									var trans = rad/128;
+									
+									ctx.fillStyle = totalShape[i].color;
+									ctx.translate(trans,trans);
+									ctx.scale(1,.5);
+									ctx.beginPath();
+									ctx.arc(x,y,rad,0,Math.PI * 2,true);
+									ctx.fill();
+								}
+								else {
+									$.noop(); //fall back
+								}
+								
+								$('#' + totalShape[i].id).draggable({       //added canvases are automatically draggable
+									revert:'invalid',
+									snap:'.dropSpace',
+									cursor:'move',
+									stop:function() {
+										var shapeState = { 			  //State of shape has been recorded
+											number:increment,
+											type:'shape',
+											kind:shapeKind,
+											cheight:rectHeight,
+											cwidth:WidthOrRadius,
+											height:rectHeight,
+											width:WidthOrRadius,
+											color:totalShape[0].color,
+										}
+										var j = shapeState.number - 1;
+										totalShape[j] = shapeState; //State of shape data has been stored
+										totalState[j] = shapeState;
+									}
+								});
+								
+								var shapeState = { 			  //State of shape has been recorded regardless of drag
+									number:increment,
+									type:'shape',
+									kind:shapeKind,
+									cheight:rectHeight,
+									cwidth:WidthOrRadius,
+									height:rectHeight,
+									width:WidthOrRadius,
+									color:totalShape[0].color,
+								}
+								var j = shapeState.number - 1;
+								totalShape[j] = shapeState;
+								totalState[j] = shapeState;
+								
+								$('#icon_holder').css({
+									zIndex:'auto'
+								})
+								.animate({
+									left:'313px',
+									opacity:'0.0'
+								},200,
+									function() {
+										$('#shape').animate({
+											left:'312px',
+											opacity:'1.0'
+										},200);
+										$('#shape_info').css({
+											visibility:'hidden'
+										});
+									}
+								);
+							}
+						}
+					);
+					$('#add_btn').trigger('click');
+					$('#add_shape').trigger('click');
+					
+					alert('Your canvas has been loaded!');
+				}
+			);
+			}
+			
+			{//Reload Button
+			$('#reload').bind('click',
+				function() {
+					location.reload();
+				}
+			);
+			}
+		}
+	});
+	
+});
+</script>
+</head>
+<body>
+	<div id = 'wrapper'>
+		<div id = 'tool_window'>
+			<div id = 'highlight' class = 'ini_button'>
+			Highlight
+			</div>
+				<div id = 'highlight_clear_holder'>
+					<form>
+					<input id = 'highlight_clear_btn' type = 'button' value = 'Clear_Highlights' />
+					</form>
+				</div>
+			<div id = 'move' class = 'ini_button'>
+			Move
+			</div>
+			<div id = 'resize' class = 'ini_button'>
+			Resize
+			</div>
+			<div id = 'shape' class = 'ini_button'>
+			Add Shape
+			</div>
+				<div id = 'icon_holder'>
+					<form name = 'shapechoice'>
+					<input id = 'draw_rect' type = 'button' value = 'Rectangle' />
+					<input id = 'draw_circ' type = 'button' value = 'Circle'/>
+					</form>
+				</div>
+				<div id = 'shape_info'>
+					<form>
+						<div id = 'rect_height'><div style = 'float:left'>Height:</div><input id = 'rect_height_input' name = 'heightrect' type = 'text' size = '2' maxlength = '2'/></div>
+						<div><div id = 'rect_width' style = 'float:left'>Width:</div><input id = 'widthorradius' name = 'widthSradius' type = 'text' size = '2' maxlength = '2'/></div>
+						Color: 
+						<select id = 'color_list' name = 'colorlist'>
+							<option value = 'black'>Black</option>
+							<option value = 'red'>Red</option>
+							<option value = 'blue'>Blue</option>
+							<option value = 'green'>Green</option>
+							<option value = 'yellow'>Yellow</option>
+						</select>
+						<input id = 'add_shape' type = 'button' value = 'Add!' />
+					</form>
+				</div>
+			<div id = 'image' class = 'ini_button'>
+			Add Image
+			</div>
+				<div id = 'img_add'>
+				<form name = 'imginput'>
+					<input id = 'img_loc' type = 'text' /><br /><br />
+					<input id = 'add_btn' type = 'button' value = 'Add_Image!' />
+				</form>
+				</div>
+			<div id = 'work_area' class = 'ini_work_area'>
+				<div id = 'clear' class = 'ini_clear'>
+				Clear Canvas
+				</div>
+<!--				<canvas id = 'canvas'>
+				Your browser does not support HTML5.
+				</canvas>-->
+				<div id = 'trash' class = 'ini_trash' class = 'trashSpace'>
+					<div>
+					Trash
+					</div>
+				</div>
+			</div>
+			<div id = 'begin' class = 'clear'>
+			Begin
+			</div>
+			<div id = 'snd_btn_container'>
+				<div id = 'save' class = 'clear'>
+				Save
+				</div>
+				<div id = 'load' class = 'clear'>
+				Load
+				</div>
+				<div id = 'reload'  class = 'clear'>
+				Reload
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id = 'modal'>
+		<div id = 'container'>
+			<h2>Welcome to my LearnBop Authoring Tool Project!</h2><br />
+			Here are some of the things you will find in the tool interface:<br /><br />
+			<b>Canvas:</b> This is where the magic happens. It is the large white space on the right side of the tool buttons. 
+							Everything you work on will be contained here.<br /><br />
+			<b>Highlight:</b> Use this tool to draw attention to different things in the work area. Click once to start drawing 
+							one, and then click again to set the highlight.<br /><br />
+			<b>Move:</b> Use this tool to move things around the canvas. All items on the canvas are movable!<br /><br />
+			<b>Resize:</b> Use this tool to set a new height and width to items on the canvas. All items can be resized!<br /><br />
+			<b>Add Shape:</b> Use this tool to add shapes to the canvas. As of now, you can create custom rectangles and circles 
+							with a variety of colors. Try it out!<br /><br />
+			<b>Add Image:</b> Use this tool to add an image to the canvas. Just paste the URL of the image into the text box and 
+							click the 'Add Image' Button!<br /><br />
+			<b>Trash:</b> Use this area to dispose of items. On the right side of the canvas, just drag an item to the trash 
+							area and drop it in to get rid of it.<br /><br />
+			<b>Clear:</b> Use this button to clear items from the canvas.<br /><br />
+			<form id = 'instruction' name = 'instructionbutton'>
+			<input id = 'instruction_btn' type = 'button' value = 'Start!' />
+			</form>
+		</div>
+		<div id = 'mask'>
+		</div>
+	</div>
+</body>
+</html>
